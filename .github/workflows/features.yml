@@ -35,4 +35,4 @@ jobs:
                 token: ${{ secrets.GITHUB_TOKEN }}
                 title: "Merge feature branch into dev"
                 body: "Automated PR from feature branch"
-                branch: "dev"
+                base: "dev"
