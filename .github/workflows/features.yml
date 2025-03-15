@@ -1,0 +1,36 @@
+# .github/workflows/features.yml
+name: Test and Integrate Features
+
+run-name: Test the Application and Create a Pull Request
+
+on:
+    push:
+        branches:
+            - 'feature/**'
+
+jobs:
+    Test:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+            - name: Set up python
+              uses: actions/setup-python@v5
+              with:
+                python-version-file: ".python-version"
+            - name: Install dependencies
+              run: pip install -r requirements.txt
+            - name: Run tests
+              run: pytest
+    PR:
+        needs: Test
+        runs-on: ubuntu-latest
+        steps:
+            - name: Create Pull Request
+              uses: peter-evans/create-pull-request@v7
+              with:
+                token: ${{ secrets.GITHUB_TOKEN }}
+                commit-message: "Merge feature branch"
+                title: "Merge feature branch into dev"
+                body: "Automated PR from feature branch"
+                branch: "dev"
