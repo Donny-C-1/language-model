@@ -24,6 +24,6 @@ jobs:
                   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
             - name: Auto-Merge PR
-              run: gh pr merge $PR_NUMBER --auto --squash
+              run: gh pr merge $PR_NUMBER --squash
               env:
                 GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
