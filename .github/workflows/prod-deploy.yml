@@ -1,0 +1,31 @@
+name: Deploy to Production
+
+run-name: Migrate latest version to production branch
+
+on:
+    push:
+        tags:
+            - "v[0-9]+"
+    workflow_dispatch:
+
+jobs:
+    Create-PR:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Create PR
+              run: |
+                pr_url=$(gh pr create -B production -H main-branch --title "Release ${{ github.ref_name }} to Production" --body "Automated release PR for ${{ github.ref_name }}")
+                pr_number=$(echo "$pr_url" | grep -o '/pull/[0-9]*' | grep -o '[0-9]*')
+                echo "PR_NUMBER=$pr_number" >> $GITHUB_ENV
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Auto-Merge PR
+              run: gh pr merge $PR_NUMBER --squash
+              env:
+                GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+            

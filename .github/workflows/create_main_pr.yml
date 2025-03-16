@@ -1,0 +1,29 @@
+name: Create PR to Main
+
+run-name: Migrate completed feature to main branch
+
+on:
+    push:
+        tags:
+            - "v*.*.*"
+    workflow_dispatch:
+
+jobs:
+    Create-PR:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Create PR
+              run: |
+                pr_url=$(gh pr create -B main-branch -H dev --title "Release ${{ github.ref_name }} to main-branch" --body "Automated release PR for ${{ github.ref_name }}")
+                pr_number=$(echo "$pr_url" | grep -o '/pull/[0-9]*' | grep -o '[0-9]*')
+                echo "PR_NUMBER=$pr_number" >> $GITHUB_ENV
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Auto-Merge PR
+              run: gh pr merge $PR_NUMBER --squash
+              env:
+                GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
